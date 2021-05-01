@@ -14,12 +14,13 @@
 //#include "BuildTable.h"
 //#include "GenerateQueryPlan.h"
 //#include "EvaluateQuery.h"
+using namespace std;
 
 int main(int argc, char** argv){
-	std::string input_query_graph_file = argv[1];
-    	std::string input_data_graph_file = argv[2];
+	string input_query_graph_file = argv[1];
+    	string input_data_graph_file = argv[2];
 
-	auto start = std::chrono::high_resolution_clock::now();
+	auto start = chrono::high_resolution_clock::now();
 
 	Graph* query_graph = new Graph(true);
     	query_graph->loadGraphFromFile(input_query_graph_file);
@@ -28,21 +29,46 @@ int main(int argc, char** argv){
 	Graph* data_graph = new Graph(true);
 	data_graph->loadGraphFromFile(input_data_graph_file);
 	
-	auto end = std::chrono::high_resolution_clock::now();
+	auto end = chrono::high_resolution_clock::now();
 
-    	double load_graphs_time_in_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();	
+    	double load_graphs_time_in_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();	
 	
-	std::cout << "-----" << std::endl;
-    	std::cout << "Query Graph Meta Information" << std::endl;
+	cout << "-----" << endl;
+    	cout << "Query Graph Meta Information" << endl;
     	query_graph->printGraphMetaData();
-    	std::cout << "-----" << std::endl;
+    	cout << "-----" << endl;
     	data_graph->printGraphMetaData();
 
-    	std::cout << "--------------------------------------------------------------------" << std::endl;
+    	cout << "--------------------------------------------------------------------" << endl;
 
     /**
      * Start queries.
      */	
+	cout << "Start queries..." << endl;
+    	cout << "-----" << endl;
+    	start = chrono::high_resolution_clock::now();
 
+	ui** candidates = NULL;
+    	ui* candidates_count = NULL;
+    	TreeNode* ceci_tree = NULL;	
+	ui* ceci_order = NULL;
+
+    	vector<unordered_map<VertexID, vector<VertexID >>> TE_Candidates;
+    	vector<vector<unordered_map<VertexID, vector<VertexID>>>> NTE_Candidates;
+	FilterVertices::CECIFilter(data_graph, query_graph, candidates, candidates_count, ceci_order, ceci_tree, TE_Candidates, NTE_Candidates);
+
+	end = chrono::high_resolution_clock::now();
+    	double filter_vertices_time_in_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	// Compute the candidates false positive ratio.
+#ifdef OPTIMAL_CANDIDATES
+    	vector<ui> optimal_candidates_count;
+    	double avg_false_positive_ratio = FilterVertices::computeCandidatesFalsePositiveRatio(data_graph, query_graph, candidates, candidates_count, optimal_candidates_count);
+    	FilterVertices::printCandidatesInfo(query_graph, candidates_count, optimal_candidates_count);
+#endif
+    	cout << "-----\n";
+	cout << "Filter time: " <<filter_vertices_time_in_ns/1000000000 << " s" << endl;
+	cout << "-----" << endl;
+    	cout << "Build indices..." << endl;
+	
 	return 0;
 }

@@ -3,7 +3,7 @@
 
 
 #include "graph.h"
-#include "types.h"
+#include "trees.h"
 
 class GenerateFilteringPlan {
 public:

@@ -1,7 +1,7 @@
 #include "FilterVertices.h"
 #include "GenerateFilteringPlan.h"
 #include <memory.h>
-#include <graphoperations.h>
+#include "graphoperations.h"
 #include <vector>
 #include <algorithm>
 #define INVALID_VERTEX_ID 100000000
@@ -340,6 +340,22 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
 
     return true;
 }
+
+void FilterVertices::allocateBuffer(const Graph *data_graph, const Graph *query_graph, ui **&candidates,
+                                    ui *&candidates_count) {
+    ui query_vertex_num = query_graph->getVerticesCount();
+    ui candidates_max_num = data_graph->getGraphMaxLabelFrequency();
+
+    candidates_count = new ui[query_vertex_num];
+    memset(candidates_count, 0, sizeof(ui) * query_vertex_num);
+
+    candidates = new ui*[query_vertex_num];
+
+    for (ui i = 0; i < query_vertex_num; ++i) {
+        candidates[i] = new ui[candidates_max_num];
+    }
+}
+
 
 bool
 FilterVertices::verifyExactTwigIso(const Graph *data_graph, const Graph *query_graph, ui data_vertex, ui query_vertex,

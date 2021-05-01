@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <iostream>
 
-#include "types.h"
+#include "trees.h"
 #include "config.h"
 
 /**

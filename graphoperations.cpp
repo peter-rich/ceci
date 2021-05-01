@@ -75,7 +75,7 @@ void GraphOperations::getKCore(const Graph *graph, int *core_table) {
     delete[] offset;
 }
 
-void GraphOperations::old_cheap(int* col_ptrs, int* col_ids, int* match, int* row_match, int n, int m) {
+void GraphOperations::old_cheap(int* col_ptrs, int* col_ids, int* match, int* row_match, int n, int m){
     int ptr;
     int i = 0;
     for(; i < n; i++) {
@@ -90,6 +90,7 @@ void GraphOperations::old_cheap(int* col_ptrs, int* col_ids, int* match, int* ro
             }
         }
     }
+		
 }
 
 void GraphOperations::match_bfs(int* col_ptrs, int* col_ids, int* match, int* row_match, int* visited,
@@ -188,16 +189,4 @@ void GraphOperations::bfsTraversal(const Graph *graph, VertexID root_vertex, Tre
     }
 }
 
-void GraphOperations::dfsTraversal(TreeNode *tree, VertexID root_vertex, ui node_num, VertexID *&dfs_order) {
-    dfs_order = new VertexID[node_num];
-    ui count = 0;
-    dfs(tree, root_vertex, dfs_order, count);
-}
 
-void GraphOperations::dfs(TreeNode *tree, VertexID cur_vertex, VertexID *dfs_order, ui &count) {
-    dfs_order[count++] = cur_vertex;
-
-    for (ui i = 0; i < tree[cur_vertex].children_count_; ++i) {
-        dfs(tree, tree[cur_vertex].children_[i], dfs_order, count);
-    }
-}

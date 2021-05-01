@@ -1,7 +1,7 @@
 #include "GenerateFilteringPlan.h"
 #include "FilterVertices.h"
 #include <queue>
-#include <graphoperations.h>
+#include "graphoperations.h"
 
 void GenerateFilteringPlan::generateCECIFilterPlan(const Graph *data_graph, const Graph *query_graph, TreeNode *&tree,
                                                    VertexID *&order) {
