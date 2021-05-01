@@ -327,49 +327,6 @@ void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_g
         flag[v] = 0;
     }
 }
-/* Lots of error.
-void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count) {
-    std::vector<std::pair<VertexID, ui>> core_vertices;
-    std::vector<std::pair<VertexID, ui>> tree_vertices;
-    std::vector<std::pair<VertexID, ui>> leaf_vertices;
-    printf("Coming now!");
-    ui query_vertices_num = query_graph->getVerticesCount();
-    double sum = 0;
-    for (ui i = 0; i < query_vertices_num; ++i) {
-        VertexID cur_vertex = i;
-        ui count = candidates_count[cur_vertex];
-        sum += count;
-
-        if (query_graph->getCoreValue(cur_vertex) > 1) {
-            core_vertices.emplace_back(std::make_pair(cur_vertex, count));
-        }
-        else {
-            if (query_graph->getVertexDegree(cur_vertex) > 1) {
-                tree_vertices.emplace_back(std::make_pair(cur_vertex, count));
-            }
-            else {
-                leaf_vertices.emplace_back(std::make_pair(cur_vertex, count));
-            }
-        }
-    }
-
-    printf("#Candidate Information: CoreVertex(%zu), TreeVertex(%zu), LeafVertex(%zu)\n", core_vertices.size(), tree_vertices.size(), leaf_vertices.size());
-
-    for (auto candidate_info : core_vertices) {
-        printf("CoreVertex %u: %u, %u \n", candidate_info.first, candidate_info.second);
-    }
-
-    for (auto candidate_info : tree_vertices) {
-        printf("TreeVertex %u: %u, %u\n", candidate_info.first, candidate_info.second);
-    }
-
-    for (auto candidate_info : leaf_vertices) {
-        printf("LeafVertex %u: %u, %u\n", candidate_info.first, candidate_info.second);
-    }
-
-    printf("Total #Candidates: %.1lf, %.1lf\n", sum);
-}
-*/
 void CECIVertices::sortCandidates(ui **candidates, ui *candidates_count, ui num) {
     for (ui i = 0; i < num; ++i) {
         std::sort(candidates[i], candidates[i] + candidates_count[i]);
