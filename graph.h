@@ -37,18 +37,10 @@ private:
 
     std::unordered_map<LabelID, ui> labels_frequency_;
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-    ui* labels_offsets_;
-    std::unordered_map<LabelID, ui>* nlf_;
-#endif
 
 private:
     void BuildReverseIndex();
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-    void BuildNLF();
-    void BuildLabelOffset();
-#endif
 
 public:
     Graph(const bool enable_label_offset) {
@@ -69,10 +61,6 @@ public:
         core_table_ = NULL;
         labels_frequency_.clear();
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-        labels_offsets_ = NULL;
-        nlf_ = NULL;
-#endif
     }
 
     ~Graph() {
@@ -82,10 +70,6 @@ public:
         delete[] reverse_index_offsets_;
         delete[] reverse_index_;
         delete[] core_table_;
-#if OPTIMIZED_LABELED_GRAPH == 1
-        delete[] labels_offsets_;
-        delete[] nlf_;
-#endif
     }
 
 public:
@@ -146,36 +130,6 @@ public:
         return reverse_index_ + reverse_index_offsets_[id];
     }
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-    const ui * getNeighborsByLabel(const VertexID id, const LabelID label, ui& count) const {
-        ui offset = id * labels_count_ + label;
-        count = labels_offsets_[offset + 1] - labels_offsets_[offset];
-        return neighbors_ + labels_offsets_[offset];
-    }
-
-    const std::unordered_map<LabelID, ui>* getVertexNLF(const VertexID id) const {
-        return nlf_ + id;
-    }
-
-    bool checkEdgeExistence(const VertexID u, const VertexID v, const LabelID u_label) const {
-        ui count = 0;
-        const VertexID* neighbors = getNeighborsByLabel(v, u_label, count);
-        int begin = 0;
-        int end = count - 1;
-        while (begin <= end) {
-            int mid = begin + ((end - begin) >> 1);
-            if (neighbors[mid] == u) {
-                return true;
-            }
-            else if (neighbors[mid] > u)
-                end = mid - 1;
-            else
-                begin = mid + 1;
-        }
-
-        return false;
-    }
-#endif
 
     bool checkEdgeExistence(VertexID u, VertexID v) const {
         if (getVertexDegree(u) < getVertexDegree(v)) {
