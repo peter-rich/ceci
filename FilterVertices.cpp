@@ -42,9 +42,6 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
         ui u_label = query_graph->getVertexLabel(u);
         ui u_degree = query_graph->getVertexDegree(u);
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-        const std::unordered_map<LabelID, ui>* u_nlf = query_graph->getVertexNLF(u);
-#endif
         candidates_count[u] = 0;
 
         visited_query_vertex[u] = true;
@@ -66,37 +63,12 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
 
                 if (data_graph->getVertexLabel(v) == u_label && data_graph->getVertexDegree(v) >= u_degree) {
 
-                    // NLF check
 
-#if OPTIMIZED_LABELED_GRAPH == 1
-                    const std::unordered_map<LabelID, ui>* v_nlf = data_graph->getVertexNLF(v);
-
-                    if (v_nlf->size() >= u_nlf->size()) {
-                        bool is_valid = true;
-
-                        for (auto element : *u_nlf) {
-                            auto iter = v_nlf->find(element.first);
-                            if (iter == v_nlf->end() || iter->second < element.second) {
-                                is_valid = false;
-                                break;
-                            }
-                        }
-
-                        if (is_valid) {
-                            iter_pair.first->second.push_back(v);
-                            if (flag[v] == 0) {
-                                flag[v] = 1;
-                                candidates[u][candidates_count[u]++] = v;
-                            }
-                        }
-                    }
-#else
                     iter_pair.first->second.push_back(v);
                     if (flag[v] == 0) {
                         flag[v] = 1;
                         candidates[u][candidates_count[u]++] = v;
                     }
-#endif
                 }
             }
 
@@ -132,9 +104,6 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
 
         ui u_label = query_graph->getVertexLabel(u);
         ui u_degree = query_graph->getVertexDegree(u);
-#if OPTIMIZED_LABELED_GRAPH == 1
-        const std::unordered_map<LabelID, ui> *u_nlf = query_graph->getVertexNLF(u);
-#endif
         for (ui l = 0; l < u_node.bn_count_; ++l) {
             VertexID u_p = u_node.bn_[l];
             VertexID *frontiers = candidates[u_p];
@@ -156,27 +125,7 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
                     if (data_graph->getVertexLabel(v) == u_label && data_graph->getVertexDegree(v) >= u_degree) {
 
                         // NLF check
-#if OPTIMIZED_LABELED_GRAPH == 1
-                        const std::unordered_map<LabelID, ui> *v_nlf = data_graph->getVertexNLF(v);
-
-                        if (v_nlf->size() >= u_nlf->size()) {
-                            bool is_valid = true;
-
-                            for (auto element : *u_nlf) {
-                                auto iter = v_nlf->find(element.first);
-                                if (iter == v_nlf->end() || iter->second < element.second) {
-                                    is_valid = false;
-                                    break;
-                                }
-                            }
-
-                            if (is_valid) {
-                                iter_pair.first->second.push_back(v);
-                            }
-                        }
-#else
                         iter_pair.first->second.push_back(v);
-#endif
                     }
                 }
 

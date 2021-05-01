@@ -59,13 +59,7 @@ int main(int argc, char** argv){
 
 	end = chrono::high_resolution_clock::now();
     	double filter_vertices_time_in_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-	// Compute the candidates false positive ratio.
-#ifdef OPTIMAL_CANDIDATES
-    	vector<ui> optimal_candidates_count;
-    	double avg_false_positive_ratio = FilterVertices::computeCandidatesFalsePositiveRatio(data_graph, query_graph, candidates, candidates_count, optimal_candidates_count);
-    	FilterVertices::printCandidatesInfo(query_graph, candidates_count, optimal_candidates_count);
-#endif
-    	cout << "-----\n";
+	cout << "-----\n";
 	cout << "Filter time: " <<filter_vertices_time_in_ns/1000000000 << " s" << endl;
 	cout << "-----" << endl;
     	cout << "Build indices..." << endl;
