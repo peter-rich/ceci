@@ -1,9 +1,9 @@
-#include "GenerateFilteringPlan.h"
-#include "FilterVertices.h"
+#include "GenerateFiltering.h"
+#include "CECIVertices.h"
 #include <queue>
 #include "graphoperations.h"
 
-void GenerateFilteringPlan::generateCECIFilterPlan(const Graph *data_graph, const Graph *query_graph, TreeNode *&tree,
+void GenerateFiltering::generateCECIFilter(const Graph *data_graph, const Graph *query_graph, TreeNode *&tree,
                                                    VertexID *&order) {
     VertexID start_vertex = selectCECIStartVertex(data_graph, query_graph);
     GraphOperations::bfsTraversal(query_graph, start_vertex, tree, order);
@@ -33,14 +33,14 @@ void GenerateFilteringPlan::generateCECIFilterPlan(const Graph *data_graph, cons
     }
 }
 
-VertexID GenerateFilteringPlan::selectCECIStartVertex(const Graph *data_graph, const Graph *query_graph) {
+VertexID GenerateFiltering::selectCECIStartVertex(const Graph *data_graph, const Graph *query_graph) {
     double min_score = data_graph->getVerticesCount();
     VertexID start_vertex = 0;
 
     for (ui i = 0; i < query_graph->getVerticesCount(); ++i) {
         ui degree = query_graph->getVertexDegree(i);
         ui count = 0;
-        FilterVertices::computeCandidateWithNLF(data_graph, query_graph, i, count);
+        CECIVertices::computeCandidateWithNLF(data_graph, query_graph, i, count);
         double cur_score = count / (double)degree;
         if (cur_score < min_score) {
             min_score = cur_score;

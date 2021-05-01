@@ -4,16 +4,14 @@
 #include <fstream>
 
 #include "graph.h"
-#include "GenerateFilteringPlan.h"
-#include "FilterVertices.h"
+#include "GenerateFiltering.h"
+#include "CECIVertices.h"
 
 // TODO:
 //	(1) Build from the CSR compressed files.
+//	(2) Build Reverse Refinement
+//	(3) Print_out the Tree.
 //
-
-//#include "BuildTable.h"
-//#include "GenerateQueryPlan.h"
-//#include "EvaluateQuery.h"
 using namespace std;
 
 int main(int argc, char** argv){
@@ -55,7 +53,7 @@ int main(int argc, char** argv){
 
     	vector<unordered_map<VertexID, vector<VertexID >>> TE_Candidates;
     	vector<vector<unordered_map<VertexID, vector<VertexID>>>> NTE_Candidates;
-	FilterVertices::CECIFilter(data_graph, query_graph, candidates, candidates_count, ceci_order, ceci_tree, TE_Candidates, NTE_Candidates);
+	CECIVertices::CECIFilter(data_graph, query_graph, candidates, candidates_count, ceci_order, ceci_tree, TE_Candidates, NTE_Candidates);
 
 	end = chrono::high_resolution_clock::now();
     	double filter_vertices_time_in_ns = chrono::duration_cast<chrono::nanoseconds>(end - start).count();

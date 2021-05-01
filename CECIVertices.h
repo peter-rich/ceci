@@ -4,7 +4,7 @@
 #include "graph.h"
 #include <vector>
 
-class FilterVertices {
+class CECIVertices {
 public:
 
 	static bool CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count, ui *&order, TreeNode *&tree, std::vector<std::unordered_map<VertexID, std::vector<VertexID > > > &TE_Candidates, std::vector<std::vector<std::unordered_map<VertexID, std::vector<VertexID> > > > &NTE_Candidates);	

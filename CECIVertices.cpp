@@ -1,5 +1,5 @@
-#include "FilterVertices.h"
-#include "GenerateFilteringPlan.h"
+#include "CECIVertices.h"
+#include "GenerateFiltering.h"
 #include <memory.h>
 #include "graphoperations.h"
 #include <vector>
@@ -7,10 +7,10 @@
 #define INVALID_VERTEX_ID 100000000
 
 bool
-FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count,
+CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count,
                            ui *&order, TreeNode *&tree,  std::vector<std::unordered_map<VertexID, std::vector<VertexID >>> &TE_Candidates,
                            std::vector<std::vector<std::unordered_map<VertexID, std::vector<VertexID>>>> &NTE_Candidates) {
-    GenerateFilteringPlan::generateCECIFilterPlan(data_graph, query_graph, tree, order);
+    GenerateFiltering::generateCECIFilter(data_graph, query_graph, tree, order);
 
     allocateBuffer(data_graph, query_graph, candidates, candidates_count);
 
@@ -144,7 +144,7 @@ FilterVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui
     return true;
 }
 
-void FilterVertices::allocateBuffer(const Graph *data_graph, const Graph *query_graph, ui **&candidates,
+void CECIVertices::allocateBuffer(const Graph *data_graph, const Graph *query_graph, ui **&candidates,
                                     ui *&candidates_count) {
     ui query_vertex_num = query_graph->getVerticesCount();
     ui candidates_max_num = data_graph->getGraphMaxLabelFrequency();
@@ -160,7 +160,7 @@ void FilterVertices::allocateBuffer(const Graph *data_graph, const Graph *query_
 }
 
 
-bool FilterVertices::verifyExactTwigIso(const Graph *data_graph, const Graph *query_graph, ui data_vertex, ui query_vertex,
+bool CECIVertices::verifyExactTwigIso(const Graph *data_graph, const Graph *query_graph, ui data_vertex, ui query_vertex,
                                    bool **valid_candidates, int *left_to_right_offset, int *left_to_right_edges,
                                    int *left_to_right_match, int *right_to_left_match, int* match_visited,
                                    int* match_queue, int* match_previous) {
@@ -198,7 +198,7 @@ bool FilterVertices::verifyExactTwigIso(const Graph *data_graph, const Graph *qu
     return true;
 }
 
-void FilterVertices::compactCandidates(ui **&candidates, ui *&candidates_count, ui query_vertex_num) {
+void CECIVertices::compactCandidates(ui **&candidates, ui *&candidates_count, ui query_vertex_num) {
     for (ui i = 0; i < query_vertex_num; ++i) {
         VertexID query_vertex = i;
         ui next_position = 0;
@@ -214,7 +214,7 @@ void FilterVertices::compactCandidates(ui **&candidates, ui *&candidates_count, 
     }
 }
 
-bool FilterVertices::isCandidateSetValid(ui **&candidates, ui *&candidates_count, ui query_vertex_num) {
+bool CECIVertices::isCandidateSetValid(ui **&candidates, ui *&candidates_count, ui query_vertex_num) {
     for (ui i = 0; i < query_vertex_num; ++i) {
         if (candidates_count[i] == 0)
             return false;
@@ -222,7 +222,7 @@ bool FilterVertices::isCandidateSetValid(ui **&candidates, ui *&candidates_count
     return true;
 }
 
-void FilterVertices::computeCandidateWithNLF(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
+void CECIVertices::computeCandidateWithNLF(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
                                                ui &count, ui *buffer) {
     LabelID label = query_graph->getVertexLabel(query_vertex);
     ui degree = query_graph->getVertexDegree(query_vertex);
@@ -243,7 +243,7 @@ void FilterVertices::computeCandidateWithNLF(const Graph *data_graph, const Grap
 }
 
 // Degree Filter
-void FilterVertices::computeCandidateWithLDF(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
+void CECIVertices::computeCandidateWithLDF(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
                                              ui &count, ui *buffer) {
     LabelID label = query_graph->getVertexLabel(query_vertex);
     ui degree = query_graph->getVertexDegree(query_vertex);
@@ -269,7 +269,7 @@ void FilterVertices::computeCandidateWithLDF(const Graph *data_graph, const Grap
     }
 }
 
-void FilterVertices::generateCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
+void CECIVertices::generateCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
                                        VertexID *pivot_vertices, ui pivot_vertices_count, VertexID **candidates,
                                        ui *candidates_count, ui *flag, ui *updated_flag) {
     LabelID query_vertex_label = query_graph->getVertexLabel(query_vertex);
@@ -319,7 +319,7 @@ void FilterVertices::generateCandidates(const Graph *data_graph, const Graph *qu
     }
 }
 
-void FilterVertices::pruneCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
+void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
                                     VertexID *pivot_vertices, ui pivot_vertices_count, VertexID **candidates,
                                     ui *candidates_count, ui *flag, ui *updated_flag) {
     LabelID query_vertex_label = query_graph->getVertexLabel(query_vertex);
@@ -372,7 +372,7 @@ void FilterVertices::pruneCandidates(const Graph *data_graph, const Graph *query
     }
 }
 
-void FilterVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count, std::vector<ui> &optimal_candidates_count) {
+void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count, std::vector<ui> &optimal_candidates_count) {
     std::vector<std::pair<VertexID, ui>> core_vertices;
     std::vector<std::pair<VertexID, ui>> tree_vertices;
     std::vector<std::pair<VertexID, ui>> leaf_vertices;
@@ -416,14 +416,13 @@ void FilterVertices::printCandidatesInfo(const Graph *query_graph, ui *candidate
     printf("Total #Candidates: %.1lf, %.1lf\n", sum, optimal_sum);
 }
 
-void FilterVertices::sortCandidates(ui **candidates, ui *candidates_count, ui num) {
+void CECIVertices::sortCandidates(ui **candidates, ui *candidates_count, ui num) {
     for (ui i = 0; i < num; ++i) {
         std::sort(candidates[i], candidates[i] + candidates_count[i]);
     }
 }
 
-double
-FilterVertices::computeCandidatesFalsePositiveRatio(const Graph *data_graph, const Graph *query_graph, ui **candidates,
+double CECIVertices::computeCandidatesFalsePositiveRatio(const Graph *data_graph, const Graph *query_graph, ui **candidates,
                                                     ui *candidates_count, std::vector<ui> &optimal_candidates_count) {
     ui query_vertices_count = query_graph->getVerticesCount();
     ui data_vertices_count = data_graph->getVerticesCount();
