@@ -23,8 +23,7 @@ public:
                                    VertexID *pivot_vertices, ui pivot_vertices_count, VertexID **candidates,
                                    ui *candidates_count, ui *flag, ui *updated_flag);
 
-    static void
-    printCandidatesInfo(const Graph *query_graph, ui *candidates_count, std::vector<ui> &optimal_candidates_count);
+    static void printCandidatesInfo(const Graph *query_graph, ui *candidates_count);
 
     static void sortCandidates(ui** candidates, ui* candidates_count, ui num);
 

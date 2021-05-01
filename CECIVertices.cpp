@@ -194,7 +194,7 @@ void CECIVertices::computeCandidateWithNLF(const Graph *data_graph, const Graph 
     for (ui j = 0; j < data_vertex_num; ++j) {
         ui data_vertex = data_vertices[j];
         if (data_graph->getVertexDegree(data_vertex) >= degree) {
-            // NFL check
+            // NFL check/
             if (buffer != NULL) {
                 buffer[count] = data_vertex;
             }
@@ -327,20 +327,18 @@ void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_g
         flag[v] = 0;
     }
 }
-
-void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count, std::vector<ui> &optimal_candidates_count) {
+/*
+void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count) {
     std::vector<std::pair<VertexID, ui>> core_vertices;
     std::vector<std::pair<VertexID, ui>> tree_vertices;
     std::vector<std::pair<VertexID, ui>> leaf_vertices;
-
+    printf("Coming now!");
     ui query_vertices_num = query_graph->getVerticesCount();
     double sum = 0;
-    double optimal_sum = 0;
     for (ui i = 0; i < query_vertices_num; ++i) {
         VertexID cur_vertex = i;
         ui count = candidates_count[cur_vertex];
         sum += count;
-        optimal_sum += optimal_candidates_count[cur_vertex];
 
         if (query_graph->getCoreValue(cur_vertex) > 1) {
             core_vertices.emplace_back(std::make_pair(cur_vertex, count));
@@ -358,114 +356,23 @@ void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_
     printf("#Candidate Information: CoreVertex(%zu), TreeVertex(%zu), LeafVertex(%zu)\n", core_vertices.size(), tree_vertices.size(), leaf_vertices.size());
 
     for (auto candidate_info : core_vertices) {
-        printf("CoreVertex %u: %u, %u \n", candidate_info.first, candidate_info.second, optimal_candidates_count[candidate_info.first]);
+        printf("CoreVertex %u: %u, %u \n", candidate_info.first, candidate_info.second);
     }
 
     for (auto candidate_info : tree_vertices) {
-        printf("TreeVertex %u: %u, %u\n", candidate_info.first, candidate_info.second, optimal_candidates_count[candidate_info.first]);
+        printf("TreeVertex %u: %u, %u\n", candidate_info.first, candidate_info.second);
     }
 
     for (auto candidate_info : leaf_vertices) {
-        printf("LeafVertex %u: %u, %u\n", candidate_info.first, candidate_info.second, optimal_candidates_count[candidate_info.first]);
+        printf("LeafVertex %u: %u, %u\n", candidate_info.first, candidate_info.second);
     }
 
-    printf("Total #Candidates: %.1lf, %.1lf\n", sum, optimal_sum);
+    printf("Total #Candidates: %.1lf, %.1lf\n", sum);
 }
-
+*/
 void CECIVertices::sortCandidates(ui **candidates, ui *candidates_count, ui num) {
     for (ui i = 0; i < num; ++i) {
         std::sort(candidates[i], candidates[i] + candidates_count[i]);
     }
 }
 
-double CECIVertices::computeCandidatesFalsePositiveRatio(const Graph *data_graph, const Graph *query_graph, ui **candidates,
-                                                    ui *candidates_count, std::vector<ui> &optimal_candidates_count) {
-    ui query_vertices_count = query_graph->getVerticesCount();
-    ui data_vertices_count = data_graph->getVerticesCount();
-
-    std::vector<std::vector<ui> > candidates_copy(query_vertices_count);
-    for (ui i = 0; i < query_vertices_count; ++i) {
-        candidates_copy[i].resize(candidates_count[i]);
-        std::copy(candidates[i], candidates[i] + candidates_count[i], candidates_copy[i].begin());
-    }
-
-    std::vector<int> flag(data_vertices_count, 0);
-    std::vector<ui> updated_flag;
-    std::vector<double> per_query_vertex_false_positive_ratio(query_vertices_count);
-    optimal_candidates_count.resize(query_vertices_count);
-
-    bool is_steady = false;
-    while (!is_steady) {
-        is_steady = true;
-        for (ui i = 0; i < query_vertices_count; ++i) {
-            ui u = i;
-
-            ui u_nbr_cnt;
-            const ui *u_nbrs = query_graph->getVertexNeighbors(u, u_nbr_cnt);
-
-            ui valid_flag = 0;
-            for (ui j = 0; j < u_nbr_cnt; ++j) {
-                ui u_nbr = u_nbrs[j];
-
-                for (ui k = 0; k < candidates_count[u_nbr]; ++k) {
-                    ui v = candidates_copy[u_nbr][k];
-
-                    if (v == INVALID_VERTEX_ID)
-                        continue;
-
-                    ui v_nbr_cnt;
-                    const ui *v_nbrs = data_graph->getVertexNeighbors(v, v_nbr_cnt);
-
-                    for (ui l = 0; l < v_nbr_cnt; ++l) {
-                        ui v_nbr = v_nbrs[l];
-
-                        if (flag[v_nbr] == valid_flag) {
-                            flag[v_nbr] += 1;
-
-                            if (valid_flag == 0) {
-                                updated_flag.push_back(v_nbr);
-                            }
-                        }
-                    }
-                }
-                valid_flag += 1;
-            }
-
-            for (ui j = 0; j < candidates_count[u]; ++j) {
-                ui v = candidates_copy[u][j];
-
-                if (v == INVALID_VERTEX_ID)
-                    continue;
-
-                if (flag[v] != valid_flag) {
-                    candidates_copy[u][j] = INVALID_VERTEX_ID;
-                    is_steady = false;
-                }
-            }
-
-            for (auto v : updated_flag) {
-                flag[v] = 0;
-            }
-            updated_flag.clear();
-        }
-    }
-
-    double sum = 0;
-    for (ui i = 0; i < query_vertices_count; ++i) {
-        ui u = i;
-        ui negative_count = 0;
-        for (ui j = 0; j < candidates_count[u]; ++j) {
-            ui v = candidates_copy[u][j];
-
-            if (v == INVALID_VERTEX_ID)
-                negative_count += 1;
-        }
-
-        per_query_vertex_false_positive_ratio[u] =
-                (negative_count) / (double) candidates_count[u];
-        sum += per_query_vertex_false_positive_ratio[u];
-        optimal_candidates_count[u] = candidates_count[u] - negative_count;
-    }
-
-    return sum / query_vertices_count;
-}

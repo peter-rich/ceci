@@ -61,6 +61,8 @@ int main(int argc, char** argv){
 	cout << "Filter time: " <<filter_vertices_time_in_ns/1000000000 << " s" << endl;
 	cout << "-----" << endl;
     	cout << "Build indices..." << endl;
+
+	//CECIVertices::printCandidatesInfo(query_graph, candidates_count);	
 	
 	return 0;
 }
