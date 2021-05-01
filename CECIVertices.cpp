@@ -4,7 +4,6 @@
 #include "graphoperations.h"
 #include <vector>
 #include <algorithm>
-#define INVALID_VERTEX_ID 100000000
 
 bool
 CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count,
@@ -50,9 +49,6 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
 
         for (ui j = 0; j < frontiers_count; ++j) {
             VertexID v_f = frontiers[j];
-
-            if (v_f == INVALID_VERTEX_ID)
-                continue;
 
             ui nbrs_cnt;
             const VertexID* nbrs = data_graph->getVertexNeighbors(v_f, nbrs_cnt);
