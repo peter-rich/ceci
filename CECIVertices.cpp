@@ -4,7 +4,7 @@
 #include "graphoperations.h"
 #include <vector>
 #include <algorithm>
-
+#define INVALID_VERTEX_ID 99999
 bool
 CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count,
                            ui *&order, TreeNode *&tree,  std::vector<std::unordered_map<VertexID, std::vector<VertexID >>> &TE_Candidates,
@@ -49,6 +49,9 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
 
         for (ui j = 0; j < frontiers_count; ++j) {
             VertexID v_f = frontiers[j];
+		
+	    if (v_f == INVALID_VERTEX_ID)
+                continue;
 
             ui nbrs_cnt;
             const VertexID* nbrs = data_graph->getVertexNeighbors(v_f, nbrs_cnt);
@@ -156,43 +159,6 @@ void CECIVertices::allocateBuffer(const Graph *data_graph, const Graph *query_gr
 }
 
 
-bool CECIVertices::verifyExactTwigIso(const Graph *data_graph, const Graph *query_graph, ui data_vertex, ui query_vertex,
-                                   bool **valid_candidates, int *left_to_right_offset, int *left_to_right_edges,
-                                   int *left_to_right_match, int *right_to_left_match, int* match_visited,
-                                   int* match_queue, int* match_previous) {
-    // Construct the bipartite graph between N(query_vertex) and N(data_vertex)
-    ui left_partition_size;
-    ui right_partition_size;
-    const VertexID* query_vertex_neighbors = query_graph->getVertexNeighbors(query_vertex, left_partition_size);
-    const VertexID* data_vertex_neighbors = data_graph->getVertexNeighbors(data_vertex, right_partition_size);
-
-    ui edge_count = 0;
-    for (int i = 0; i < left_partition_size; ++i) {
-        VertexID query_vertex_neighbor = query_vertex_neighbors[i];
-        left_to_right_offset[i] = edge_count;
-
-        for (int j = 0; j < right_partition_size; ++j) {
-            VertexID data_vertex_neighbor = data_vertex_neighbors[j];
-
-            if (valid_candidates[query_vertex_neighbor][data_vertex_neighbor]) {
-                left_to_right_edges[edge_count++] = j;
-            }
-        }
-    }
-    left_to_right_offset[left_partition_size] = edge_count;
-
-    memset(left_to_right_match, -1, left_partition_size * sizeof(int));
-    memset(right_to_left_match, -1, right_partition_size * sizeof(int));
-
-    GraphOperations::match_bfs(left_to_right_offset, left_to_right_edges, left_to_right_match, right_to_left_match,
-                               match_visited, match_queue, match_previous, left_partition_size, right_partition_size);
-    for (int i = 0; i < left_partition_size; ++i) {
-        if (left_to_right_match[i] == -1)
-            return false;
-    }
-
-    return true;
-}
 
 void CECIVertices::compactCandidates(ui **&candidates, ui *&candidates_count, ui query_vertex_num) {
     for (ui i = 0; i < query_vertex_num; ++i) {
@@ -278,8 +244,6 @@ void CECIVertices::generateCandidates(const Graph *data_graph, const Graph *quer
         for (ui j = 0; j < candidates_count[pivot_vertex]; ++j) {
             VertexID v = candidates[pivot_vertex][j];
 
-            if (v == INVALID_VERTEX_ID)
-                continue;
             ui v_nbrs_count;
             const VertexID* v_nbrs = data_graph->getVertexNeighbors(v, v_nbrs_count);
 
@@ -329,8 +293,6 @@ void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_g
         for (ui j = 0; j < candidates_count[pivot_vertex]; ++j) {
             VertexID v = candidates[pivot_vertex][j];
 
-            if (v == INVALID_VERTEX_ID)
-                continue;
             ui v_nbrs_count;
             const VertexID* v_nbrs = data_graph->getVertexNeighbors(v, v_nbrs_count);
 
@@ -354,8 +316,6 @@ void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_g
 
     for (ui i = 0; i < candidates_count[query_vertex]; ++i) {
         ui v = candidates[query_vertex][i];
-        if (v == INVALID_VERTEX_ID)
-            continue;
 
         if (flag[v] != count) {
             candidates[query_vertex][i] = INVALID_VERTEX_ID;

@@ -32,10 +32,6 @@ public:
                                                           ui *candidates_count, std::vector<ui> &optimal_candidates_count);
 private:
     static void allocateBuffer(const Graph* data_graph, const Graph* query_graph, ui** &candidates, ui* &candidates_count);
-    static bool verifyExactTwigIso(const Graph *data_graph, const Graph *query_graph, ui data_vertex, ui query_vertex,
-                                   bool **valid_candidates, int *left_to_right_offset, int *left_to_right_edges,
-                                   int *left_to_right_match, int *right_to_left_match, int* match_visited,
-                                   int* match_queue, int* match_previous);
     static void compactCandidates(ui** &candidates, ui* &candidates_count, ui query_vertex_num);
     static bool isCandidateSetValid(ui** &candidates, ui* &candidates_count, ui query_vertex_num);
 };
