@@ -327,7 +327,7 @@ void CECIVertices::pruneCandidates(const Graph *data_graph, const Graph *query_g
         flag[v] = 0;
     }
 }
-/*
+/* Lots of error.
 void CECIVertices::printCandidatesInfo(const Graph *query_graph, ui *candidates_count) {
     std::vector<std::pair<VertexID, ui>> core_vertices;
     std::vector<std::pair<VertexID, ui>> tree_vertices;
