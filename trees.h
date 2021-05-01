@@ -9,10 +9,7 @@ typedef unsigned int ui;
 typedef uint32_t VertexID;
 typedef ui LabelID;
 
-enum MatchingIndexType {
-    VertexCentric = 0,
-    EdgeCentric = 1
-};
+
 
 class TreeNode {
 public:
