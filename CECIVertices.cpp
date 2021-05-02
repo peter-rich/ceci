@@ -246,6 +246,52 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
 
     // Clear NTE_Candidate and TE_Candidate
 
+    // Check if candidate is none then return false
+    for (ui i = 0; i < query_vertices_count; ++ i){
+    	if (candidates_count[i] == 0) {
+		return false;
+	}
+    }
+
+    //
+    for (ui i = 1; i < query_vertices_count; ++i) {
+    	VertexID u = order[i];
+	TreeNode& u_node = tree[u];
+
+	//Clear TE_Candidates.
+	{
+		VertexID u_p = u_node.parent_;
+		auto iter = TE_Candidates[u].begin();
+		while(iter != TE_Candidates[u].end()) {
+			VertexID v_f = iter->first;
+			if (!std::binary_search(candidates[u_p], candidates[u_p] + candidates_count[u_p], v_f)) {
+				iter = TE_Candidates[u].erase(iter);
+			}	
+			else {
+				std::sort(iter->second.begin(), iter->second.end());
+				iter++;
+			}
+		}
+	}
+
+	// Clear NTE_Candidates.
+	{
+		for (ui j = 0; j < u_node.bn_count_; ++j) {
+			VertexID u_p = u_node.bn_[j];
+			auto iter = NTE_Candidates[u][u_p].end();
+			while (iter != NTE_Candidates[u][u_p].end()) {
+				VertexID v_f = iter->first;
+				if (!std::binary_search(candidates[u_p], candidates[u_p] + candidates_count[u_p], v_f)) {
+                        		iter = NTE_Candidates[u][u_p].erase(iter);
+                    		}
+                    		else {
+                        		std::sort(iter->second.begin(), iter->second.end());
+                        		iter++;
+                    		}
+			}
+		}
+	}
+    }
 
 
 
