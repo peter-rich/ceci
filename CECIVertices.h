@@ -27,8 +27,6 @@ public:
 
     static void sortCandidates(ui** candidates, ui* candidates_count, ui num);
 
-    static double computeCandidatesFalsePositiveRatio(const Graph *data_graph, const Graph *query_graph, ui **candidates,
-                                                          ui *candidates_count, std::vector<ui> &optimal_candidates_count);
 private:
     static void allocateBuffer(const Graph* data_graph, const Graph* query_graph, ui** &candidates, ui* &candidates_count);
     static void compactCandidates(ui** &candidates, ui* &candidates_count, ui query_vertex_num);
