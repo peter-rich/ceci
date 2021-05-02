@@ -8,4 +8,5 @@ This is an implement of the Paper: [ CECI: Compact Embedding Cluster Index for S
 ## TODO
 (1) compressed csr file
 (2) Evaluate
-(3) Reverse_BFS_Refinement
+(3) Label Count Filter
+(4) Print Tree
