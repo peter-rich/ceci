@@ -359,54 +359,6 @@ void CECIVertices::computeCandidateWithNLF(const Graph *data_graph, const Graph 
 
 }
 
-void CECIVertices::generateCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
-                                       VertexID *pivot_vertices, ui pivot_vertices_count, VertexID **candidates,
-                                       ui *candidates_count, ui *flag, ui *updated_flag) {
-    LabelID query_vertex_label = query_graph->getVertexLabel(query_vertex);
-    ui query_vertex_degree = query_graph->getVertexDegree(query_vertex);
-    ui count = 0;
-    ui updated_flag_count = 0;
-    for (ui i = 0; i < pivot_vertices_count; ++i) {
-        VertexID pivot_vertex = pivot_vertices[i];
-
-        for (ui j = 0; j < candidates_count[pivot_vertex]; ++j) {
-            VertexID v = candidates[pivot_vertex][j];
-
-            ui v_nbrs_count;
-            const VertexID* v_nbrs = data_graph->getVertexNeighbors(v, v_nbrs_count);
-
-            for (ui k = 0; k < v_nbrs_count; ++k) {
-                VertexID v_nbr = v_nbrs[k];
-                LabelID v_nbr_label = data_graph->getVertexLabel(v_nbr);
-                ui v_nbr_degree = data_graph->getVertexDegree(v_nbr);
-
-                if (flag[v_nbr] == count && v_nbr_label == query_vertex_label && v_nbr_degree >= query_vertex_degree) {
-                    flag[v_nbr] += 1;
-
-                    if (count == 0) {
-                        updated_flag[updated_flag_count++] = v_nbr;
-                    }
-                }
-            }
-        }
-
-        count += 1;
-    }
-
-    for (ui i = 0; i < updated_flag_count; ++i) {
-        VertexID v = updated_flag[i];
-        if (flag[v] == count) {
-            // NLF filter.
-            candidates[query_vertex][candidates_count[query_vertex]++] = v;
-        }
-    }
-
-    for (ui i = 0; i < updated_flag_count; ++i) {
-        ui v = updated_flag[i];
-        flag[v] = 0;
-    }
-}
-
 
 void CECIVertices::sortCandidates(ui **candidates, ui *candidates_count, ui num) {
     for (ui i = 0; i < num; ++i) {
