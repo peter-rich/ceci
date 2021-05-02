@@ -29,6 +29,59 @@ void Graph::BuildReverseIndex() {
     }
 }
 
+void Graph::BuildNLF() {
+	nlf_ = new std::unordered_map<LabelID, ui>[vertices_count_];
+	for (ui i = 0; i < vertices_count_; ++i) {
+		ui count;
+		const VertexID * neighbors = getVertexNeighbors(i, count);
+
+		for (ui j = 0; j < count; ++j) {
+			VertexID u = neighbors[j];
+			LabelID label = getVertexLabel(u);
+			if (nlf_[i].find(label) == nlf_[i].end()) {
+				nlf_[i][label] = 0;
+			}
+
+			nlf_[i][label] += 1;
+		}
+	}
+}
+
+void Graph::BuildLabelOffset() {
+    size_t labels_offset_size = (size_t)vertices_count_ * labels_count_ + 1;
+    labels_offsets_ = new ui[labels_offset_size];
+    std::fill(labels_offsets_, labels_offsets_ + labels_offset_size, 0);
+
+    for (ui i = 0; i < vertices_count_; ++i) {
+        std::sort(neighbors_ + offsets_[i], neighbors_ + offsets_[i + 1],
+            [this](const VertexID u, const VertexID v) -> bool {
+                return labels_[u] == labels_[v] ? u < v : labels_[u] < labels_[v];
+            });
+    }
+
+    for (ui i = 0; i < vertices_count_; ++i) {
+        LabelID previous_label = 0;
+        LabelID current_label = 0;
+
+        labels_offset_size = i * labels_count_;
+        labels_offsets_[labels_offset_size] = offsets_[i];
+
+        for (ui j = offsets_[i]; j < offsets_[i + 1]; ++j) {
+            current_label = labels_[neighbors_[j]];
+
+            if (current_label != previous_label) {
+                for (ui k = previous_label + 1; k <= current_label; ++k) {
+                    labels_offsets_[labels_offset_size + k] = j;
+                }
+                previous_label = current_label;
+            }
+        }
+
+        for (ui l = current_label + 1; l <= labels_count_; ++l) {
+            labels_offsets_[labels_offset_size + l] = offsets_[i + 1];
+        }
+    }
+}
 
 void Graph::loadGraphFromFile(const std::string &file_path) {
     std::ifstream infile(file_path);
@@ -104,6 +157,8 @@ void Graph::loadGraphFromFile(const std::string &file_path) {
 
     BuildReverseIndex();
 
+    BuildNLF();
+    // BuildLabelOffset();
 }
 
 void Graph::printGraphMetaData() {
@@ -236,6 +291,9 @@ void Graph::loadGraphFromFileCompressed(const std::string &degree_path, const st
     BuildReverseIndex();
     end = std::chrono::high_resolution_clock::now();
     std::cout << "Build reverse index file time: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << " seconds" << std::endl;
+
+    BuildNLF();
+    // BuildLabelOffset();
 }
 
 void Graph::storeComparessedGraph(const std::string& degree_path, const std::string& edge_path,
