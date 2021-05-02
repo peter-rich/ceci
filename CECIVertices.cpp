@@ -135,6 +135,12 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
 
         ui u_label = query_graph->getVertexLabel(u);
         ui u_degree = query_graph->getVertexDegree(u);
+
+	// Label Count Filter Initiate
+	const std::unordered_map<LabelID, ui> *u_nlf = query_graph->getVertexNLF(u);
+
+	// Program.
+
         for (ui l = 0; l < u_node.bn_count_; ++l) {
             VertexID u_p = u_node.bn_[l];
             VertexID *frontiers = candidates[u_p];
@@ -156,7 +162,27 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
                     if (data_graph->getVertexLabel(v) == u_label && data_graph->getVertexDegree(v) >= u_degree) {
 
                         // NLF check
-                        iter_pair.first->second.push_back(v);
+			// Initiate label count of the v
+			const std::unordered_map<LabelID, ui> *v_nlf = data_graph->getVertexNLF(v);
+
+			if (v_nlf->size() >= u_nlf->size()){
+				bool is_valid = true;
+
+				for (auto element : *u_nlf) {
+					auto iter = v_nlf->find(element.first);
+					if (iter == v_nlf->end() || iter->second < element.second) {
+						is_valid = false;
+						break;
+					}
+				}
+
+				if (is_valid) {
+					iter_pair.first->second.push_back(v);
+				}
+			}
+
+                        // This situation will not use the label count of the v.
+			// iter_pair.first->second.push_back(v);
                     }
                 }
 
