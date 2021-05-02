@@ -62,7 +62,7 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
             auto iter_pair = TE_Candidates[u].emplace(v_f, std::vector<VertexID>());
             for (ui k = 0; k < nbrs_cnt; ++k) {
                 VertexID v = nbrs[k];
-
+		// Label Degree Filter
                 if (data_graph->getVertexLabel(v) == u_label && data_graph->getVertexDegree(v) >= u_degree) {
 
 
