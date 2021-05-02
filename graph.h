@@ -25,7 +25,7 @@ private:
     ui max_degree_;
     ui max_label_frequency_;
 
-    ui* offsets_;
+    ui* offsets_; // This is planned for compressed graph.
     VertexID * neighbors_;
     LabelID* labels_;
     ui* reverse_index_offsets_;

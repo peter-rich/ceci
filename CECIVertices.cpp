@@ -207,33 +207,6 @@ void CECIVertices::computeCandidateWithNLF(const Graph *data_graph, const Graph 
 
 }
 
-// Degree Filter
-void CECIVertices::computeCandidateWithLDF(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
-                                             ui &count, ui *buffer) {
-    LabelID label = query_graph->getVertexLabel(query_vertex);
-    ui degree = query_graph->getVertexDegree(query_vertex);
-    count = 0;
-    ui data_vertex_num;
-    const ui* data_vertices = data_graph->getVerticesByLabel(label, data_vertex_num);
-
-    if (buffer == NULL) {
-        for (ui i = 0; i < data_vertex_num; ++i) {
-            VertexID v = data_vertices[i];
-            if (data_graph->getVertexDegree(v) >= degree) {
-                count += 1;
-            }
-        }
-    }
-    else {
-        for (ui i = 0; i < data_vertex_num; ++i) {
-            VertexID v = data_vertices[i];
-            if (data_graph->getVertexDegree(v) >= degree) {
-                buffer[count++] = v;
-            }
-        }
-    }
-}
-
 void CECIVertices::generateCandidates(const Graph *data_graph, const Graph *query_graph, VertexID query_vertex,
                                        VertexID *pivot_vertices, ui pivot_vertices_count, VertexID **candidates,
                                        ui *candidates_count, ui *flag, ui *updated_flag) {
