@@ -18,7 +18,6 @@
 
 class Graph {
 private:
-    bool enable_label_offset_;
 
     ui vertices_count_;
     ui edges_count_;
@@ -43,8 +42,7 @@ private:
 
 
 public:
-    Graph(const bool enable_label_offset) {
-        enable_label_offset_ = enable_label_offset;
+    Graph() {
 
         vertices_count_ = 0;
         edges_count_ = 0;

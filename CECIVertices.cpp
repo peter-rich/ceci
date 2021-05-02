@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #define INVALID_VERTEX_ID 99999
+using namespace std;
+
 bool
 CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui **&candidates, ui *&candidates_count,
                            ui *&order, TreeNode *&tree,  std::vector<std::unordered_map<VertexID, std::vector<VertexID >>> &TE_Candidates,
@@ -18,7 +20,8 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
     // Find the pivots.
     VertexID root = order[0];
     computeCandidateWithNLF(data_graph, query_graph, root, candidates_count[root], candidates[root]);
-
+	
+    cout << candidates_count[root] << endl;    
     if (candidates_count[root] == 0)
         return false;
 

@@ -20,11 +20,11 @@ int main(int argc, char** argv){
 
 	auto start = chrono::high_resolution_clock::now();
 
-	Graph* query_graph = new Graph(true);
+	Graph* query_graph = new Graph();
     	query_graph->loadGraphFromFile(input_query_graph_file);
 
 	
-	Graph* data_graph = new Graph(true);
+	Graph* data_graph = new Graph();
 	data_graph->loadGraphFromFile(input_data_graph_file);
 	
 	auto end = chrono::high_resolution_clock::now();
