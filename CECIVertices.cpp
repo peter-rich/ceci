@@ -141,6 +141,112 @@ CECIVertices::CECIFilter(const Graph *data_graph, const Graph *query_graph, ui *
             }
         }
     }
+    
+    // Reverse BFS refine build vector for every query.
+    std::vector<std::vector<ui>> cardinality(query_vertices_count);
+    for (ui i = 0; i < query_vertices_count; ++i) {
+    	cardinality[i].resize(candidates_count[i], 1);
+    }
+
+    std::vector<ui> local_cardinality(data_vertices_count);
+    std::fill(local_cardinality.begin(), local_cardinality.end(), 0);
+	
+    for (int i = query_vertices_count - 1; i >= 0; --i) {
+        VertexID u = order[i];
+        TreeNode& u_node = tree[u];
+
+        ui flag_num = 0;
+        ui updated_flag_count = 0;
+
+	//compute the intersection of the TE_Candidates and NTE_Candidates.
+	for (ui j = 0; j < candidates_count[u]; ++j) {
+		VertexID v = candidates[u][j];
+
+		if (v == INVALID_VERTEX_ID)
+			continue;
+
+		if (flag[v] == flag_num) {
+			flag[v] += 1;
+			updated_flag[updated_flag_count++] = v;
+		}
+		for (ui j = 0; j < u_node.bn_count_; ++j) {
+			VertexID u_bn = u_node.bn_[j];
+			flag_num += 1;
+			for (auto iter = NTE_Candidates[u][u_bn].begin(); iter != NTE_Candidates[u][u_bn].end(); ++iter) {
+                		for (auto v : iter->second) {
+                    			if (flag[v] == flag_num) {
+                        			flag[v] += 1;
+                    			}
+                		}
+            		}
+		}
+	}
+
+	flag_num += 1;
+
+	// Get the cardinality of the candidates of u.
+	for (ui j = 0; j < candidates_count[u]; ++j) {
+		VertexID v = candidates[u][j];
+		if (v != INVALID_VERTEX_ID && flag[v] == flag_num) {
+			local_cardinality[v] = cardinality[u][j];
+		}
+		else {
+			cardinality[u][j] = 0;
+		}
+	}
+
+	VertexID u_p = u_node.parent_;
+	VertexID* frontiers = candidates[u_p];
+	ui frontiers_count = candidates_count[u_p];
+
+	// Loop over TE_Candidates.
+	//
+	for (ui j = 0; j < frontiers_count; ++j) {	
+		VertexID v_f = frontiers[j];	
+		
+		if (v_f == INVALID_VERTEX_ID) {
+			cardinality[u_p][j] = 0;
+			continue;
+		}
+
+		ui temp_score = 0;
+		for (auto iter = TE_Candidates[u][v_f].begin(); iter != TE_Candidates[u][v_f].end();) {
+			VertexID v = *iter;
+			temp_score += local_cardinality[v];
+			if (local_cardinality[v] == 0) {
+				iter = TE_Candidates[u][v_f].erase(iter);
+                    		for (ui k = 0; k < u_node.children_count_; ++k) {
+                        		VertexID u_c = u_node.children_[k];
+                        		TE_Candidates[u_c].erase(v);
+                    		}
+
+                    		for (ui k = 0; k < u_node.fn_count_; ++k) {
+                        		VertexID u_c = u_node.fn_[k];
+                       			NTE_Candidates[u_c][u].erase(v);
+                    		}	
+			}
+			else {
+				++iter;
+			}
+		}
+
+		cardinality[u_p][j] *= temp_score;
+	}
+
+	// Clear updated flag.
+	//
+	for (ui j = 0; j < updated_flag_count; ++j) {
+            flag[updated_flag[j]] = 0;
+            local_cardinality[updated_flag[j]] = 0;
+        }
+    }
+    
+    compactCandidates(candidates, candidates_count, query_vertices_count);
+    sortCandidates(candidates, candidates_count, query_vertices_count);
+
+    // Clear NTE_Candidate and TE_Candidate
+
+
 
 
     return true;
