@@ -51,6 +51,40 @@ public:
         	nlf = NULL;
 
 	}
+	~Graph() {
+		delete[] offsets;
+		delete[] neighbors;
+		delete[] labels;
+		delete[] reverse_index_offsets;
+		delete[] reverse_index;
+		delete[] labels_offsets;
+		delete[] nlf;
+	}
+
+	void loadGraph(const std::string & file_path);
+	void loadCompressedGraph(const );
+	void printGraph();
+	
+	ui getLabelsCount() {
+		return l_count;
+	} 
+
+	ui getVerticesCount {
+		return v_count;
+	}
+	
+	ui getEdgesCount() {
+		return e_count;
+	}
+
+	ui getMaxDegree() {
+		return max_degree;
+	}
+
+	L_ID getVertexLabel(const VertexID id) {
+        	return labels_[id];
+    	}
+	// other
 }
 
 #endif
