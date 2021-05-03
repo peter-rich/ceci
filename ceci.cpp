@@ -4,7 +4,6 @@
 #include <fstream>
 
 #include "graph.h"
-#include "GenerateFiltering.h"
 #include "CECIVertices.h"
 
 // TODO:

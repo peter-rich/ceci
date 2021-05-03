@@ -4,26 +4,26 @@
 #include <cstdint>
 #include <stdlib.h>
 
-typedef unsigned int ui;
+typedef unsigned int ui; // ui is the query node.
 
-typedef uint32_t VertexID;
-typedef ui LabelID;
+typedef uint32_t V_ID;
+typedef ui L_ID;
 
 
 
 class TreeNode {
 public:
-    VertexID id_;
-    VertexID parent_;
+    V_ID id_;
+    V_ID parent_;
     ui level_;
     ui under_level_count_;
     ui children_count_;
     ui bn_count_;
     ui fn_count_;
-    VertexID* under_level_;
-    VertexID* children_;
-    VertexID* bn_;
-    VertexID* fn_;
+    V_ID* under_level_;
+    V_ID* children_;
+    V_ID* bn_;
+    V_ID* fn_;
     size_t estimated_embeddings_num_;
 public:
     TreeNode() {
@@ -49,10 +49,10 @@ public:
     }
 
     void initialize(const ui size) {
-        under_level_ = new VertexID[size];
-        bn_ = new VertexID[size];
-        fn_ = new VertexID[size];
-        children_ = new VertexID[size];
+        under_level_ = new V_ID[size];
+        bn_ = new V_ID[size];
+        fn_ = new V_ID[size];
+        children_ = new V_ID[size];
     }
 };
 
