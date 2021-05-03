@@ -3,8 +3,14 @@
 #include <thread>
 #include <fstream>
 
+<<<<<<< HEAD
 #include "graph.h"
 #include "CECIVertices.h"
+=======
+//#include "graph.h"
+//#include "GenerateFiltering.h"
+//#include "CECIVertices.h"
+>>>>>>> 815dcf34922cbff793c21b2e44ff36e9b90de4dd
 
 // TODO:
 //	(1) Build from the CSR compressed files.

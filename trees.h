@@ -1,5 +1,5 @@
 #ifndef CECI_TYPES_H
-#define CECI_TYPES_H
+#define CECI_TYPES_H 
 
 #include <cstdint>
 #include <stdlib.h>
