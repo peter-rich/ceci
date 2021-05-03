@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "trees.h"
-
+using namespace std;
 
 
 class Graph {
@@ -22,9 +22,9 @@ private:
 	ui* reverse_index_offsets;
 	ui* reverse_index;
 
-	std::unordered_map<L_ID, ui> labels_frequency;
+	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
-    	std::unordered_map<LabelID, ui>* nlf;
+    	unordered_map<LabelID, ui>* nlf;
 	
 private:
 	void BuildReverseIndex();
@@ -61,7 +61,7 @@ public:
 		delete[] nlf;
 	}
 
-	void loadGraph(const std::string & file_path);
+	void loadGraph(const string & file_path);
 	void loadCompressedGraph(const );
 	void printGraph();
 	
@@ -82,7 +82,7 @@ public:
 	}
 
 	L_ID getVertexLabel(const VertexID id) {
-        	return labels_[id];
+        	return labels[id];
     	}
 	// other
 }
