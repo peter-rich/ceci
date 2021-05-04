@@ -1,6 +1,10 @@
 #include "graph.h"
 #include <algorithm>
-void loadGraph(const string & file_path) {
+#include <fstream>
+void Graph::printGraph(){
+	return;
+}
+void Graph::loadGraph(const string & file_path) {
 	ifstream graphFile(file_path);
 
     	if (!graphFile.is_open()) {
@@ -8,21 +12,17 @@ void loadGraph(const string & file_path) {
         	exit(-1);
     	}
 
-    	char type;
-    	infile >> type >> vertices_count_ >> edges_count_;
-    	offsets = new ui[v_count +  1];
+	char type;
+    	graphFile >> type >> v_count >> e_count;
+    	offsets = new ui[v_count + 1];
     	offsets[0] = 0;
 
-    	neighbors_ = new VertexID[edges_count_ * 2];
-    	labels_ = new LabelID[vertices_count_];
-    	labels_count_ = 0;
-    	max_degree_ = 0;
+	neighbors = new V_ID[e_count * 2];
+	labels = new L_ID[v_count];
+	l_count = 0;
+	max_degree = 0;
 
-    	L_ID max_label_id = 0;
-    	std::vector<ui> neighbors_offset(vertices_count_, 0);
-
-    	while (infile >> type) {
-
-    	}
-
+	L_ID max_label_id = 0;
+	 
+	return;	
 }

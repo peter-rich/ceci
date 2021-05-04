@@ -6,7 +6,6 @@
 #include "trees.h"
 using namespace std;
 
-
 class Graph {
 private:
 	ui v_count; // vertices count
@@ -24,7 +23,7 @@ private:
 
 	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
-    	unordered_map<LabelID, ui>* nlf;
+    	unordered_map<L_ID, ui>* nlf;
 	
 private:
 	void BuildReverseIndex();
@@ -60,16 +59,15 @@ public:
 		delete[] labels_offsets;
 		delete[] nlf;
 	}
-
+public:
 	void loadGraph(const string & file_path);
-	void loadCompressedGraph(const );
+	//void loadCompressedGraph(const );
 	void printGraph();
-	
 	ui getLabelsCount() {
 		return l_count;
 	} 
 
-	ui getVerticesCount {
+	ui getVerticesCount() {
 		return v_count;
 	}
 	
@@ -81,10 +79,9 @@ public:
 		return max_degree;
 	}
 
-	L_ID getVertexLabel(const VertexID id) {
+	L_ID getVertexLabel(const V_ID id) {
         	return labels[id];
     	}
-	// other
-}
+};
 
 #endif
