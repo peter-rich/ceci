@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <stdlib.h>
 
-typedef unsigned int ui; // ui is the query node.
+typedef unsigned int ui; // u is the query node.
 
 typedef uint32_t V_ID;
 typedef ui L_ID;
@@ -13,68 +13,68 @@ typedef ui L_ID;
 
 class TreeNode {
 public:
-    V_ID id_;
-    V_ID parent_;
-    ui level_;
-    ui under_level_count_;
-    ui children_count_;
-    ui bn_count_;
-    ui fn_count_;
-    V_ID* under_level_;
-    V_ID* children_;
-    V_ID* bn_;
-    V_ID* fn_;
-    size_t estimated_embeddings_num_;
+    V_ID id;
+    V_ID parent;
+    ui level;
+    ui under_level_count;
+    ui children_count;
+    ui bn_count;
+    ui fn_count;
+    V_ID* under_level;
+    V_ID* children;
+    V_ID* bn;
+    V_ID* fn;
+    size_t estimated_embeddings_num;
 public:
     TreeNode() {
-        id_ = 0;
-        under_level_ = NULL;
-        bn_ = NULL;
-        fn_ = NULL;
-        children_ = NULL;
-        parent_ = 0;
-        level_ = 0;
-        under_level_count_ = 0;
-        children_count_ = 0;
-        bn_count_ = 0;
-        fn_count_ = 0;
-        estimated_embeddings_num_ = 0;
+        id = 0;
+        under_level = NULL;
+        bn = NULL;
+        fn = NULL;
+        children = NULL;
+        parent = 0;
+        level = 0;
+        under_level_count = 0;
+        children_count = 0;
+        bn_count = 0;
+        fn_count = 0;
+        estimated_embeddings_num = 0;
     }
 
     ~TreeNode() {
-        delete[] under_level_;
-        delete[] bn_;
-        delete[] fn_;
-        delete[] children_;
+        delete[] under_level;
+        delete[] bn;
+        delete[] fn;
+        delete[] children;
     }
 
     void initialize(const ui size) {
-        under_level_ = new V_ID[size];
-        bn_ = new V_ID[size];
-        fn_ = new V_ID[size];
-        children_ = new V_ID[size];
+        under_level = new V_ID[size];
+        bn = new V_ID[size];
+        fn = new V_ID[size];
+        children = new V_ID[size];
     }
 };
 
 class Edges {
 public:
-    ui* offset_;
-    ui* edge_;
-    ui vertex_count_;
-    ui edge_count_;
-    ui max_degree_;
+    ui* offset;
+    ui* edge;
+    ui v_count;
+    ui e_count;
+    ui max_degree;
 public:
     Edges() {
-        offset_ = NULL;
-        edge_ = NULL;
-        vertex_count_ = 0;
-        edge_count_ = 0;
-        max_degree_ = 0;
+        offset = NULL;
+        edge = NULL;
+        v_count = 0;
+        e_count = 0;
+        max_degree = 0;
     }
 
     ~Edges() {
-        delete[] offset_;
-        delete[] edge_;
+        delete[] offset;
+        delete[] edge;
     }
 };
 

@@ -23,6 +23,37 @@ void Graph::loadGraph(const string & file_path) {
 	max_degree = 0;
 
 	L_ID max_label_id = 0;
-	 
+	std::vector<ui> neighbors_offsets(v_count, 0);
+	while(graphFile >> type) {
+		if (type == 'v') { // Read Vertex
+			V_ID id;
+			L_ID label;
+			ui degree;
+			graphFile >> id >> label >> degree;
+			
+			labels[id] = label;
+			offsets[id+1] = offsets[id] + degree;
+			if (degree > max_degree) {
+				max_degree = degree;
+			}
+			
+			if (labels_frequency.find(label) == labels_frequency.end()) {
+	labels_frequency[label] = 0;
+	if ( label > max_label_id) {
+		max_label_id = label;	
+	}
+				
+			}
+		}
+		else if (type == "e") { // Read edge.
+			V_ID src;
+			V_ID dst;
+			graphFile >> src >> dst;
+
+			ui offset_tmp = offset[src] + neighbors_offset[src]
+		}
+						
+		
+	}	 
 	return;	
 }
