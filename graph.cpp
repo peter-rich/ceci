@@ -4,26 +4,9 @@
 
 using namespace std;
 void Graph::printGraph(){
-	return;
+    cout << "|V|: " << v_count << ", |E|: " << e_count << ", |L|: " << l_count << endl;
+    cout << "Max Degree: " << max_degree << ", Max Label Frequency: " << max_label_frequency << endl;
 }
-// Build Index from the to label to the vertex.
-void Graph::BuildReverseIndex(){
-	reverse_index = new ui[v_count];
-	reverse_index_offsets = new ui[l_count + 1];
-	reverse_index_offsets[0] = 0;
-
-	ui total = 0;
-	for (ui i = 0; i < l_count; ++i) {
-		reverse_index_offsets[i+1] = total;
-		total += labels_frequency[i];
-	}
-	
-	for (ui i = 0; i < v_count; ++ i) {
-		L_ID label = labels[i];
-		reverse_index[reverse_index_offsets[label + 1] ++] = i;
-	}	
-}
-
 void Graph::BuildNLCF(){
 	nlf = new unordered_map<L_ID, ui>[v_count];
     	for (ui i = 0; i < v_count; ++i) {
@@ -123,6 +106,5 @@ void Graph::loadGraph(const string & file_path) {
 	} 
 
 	
-	BuildReverseIndex();
 	BuildNLCF();
 }

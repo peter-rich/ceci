@@ -18,15 +18,12 @@ private:
 	
 	V_ID * neighbors;
 	L_ID * labels;
-	ui* reverse_index_offsets;
-	ui* reverse_index; // Build index from 
 
 	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
     	unordered_map<L_ID, ui>* nlf;
 	
 private:
-	void BuildReverseIndex();
 	void BuildNLCF();
 	void BuildLabelOffset();
 
@@ -42,8 +39,6 @@ public:
 
         	neighbors = NULL;
         	labels = NULL;
-        	reverse_index_offsets = NULL;
-        	reverse_index = NULL;
 
         	labels_frequency.clear();
         	labels_offsets = NULL;
@@ -54,8 +49,6 @@ public:
 		delete[] offsets;
 		delete[] neighbors;
 		delete[] labels;
-		delete[] reverse_index_offsets;
-		delete[] reverse_index;
 		delete[] labels_offsets;
 		delete[] nlf;
 	}
