@@ -6,7 +6,7 @@
 
 typedef unsigned int ui; // u is the query node.
 
-typedef uint32_t V_ID;
+typedef ui V_ID;
 typedef ui L_ID;
 
 

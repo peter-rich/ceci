@@ -19,7 +19,7 @@ private:
 	V_ID * neighbors;
 	L_ID * labels;
 	ui* reverse_index_offsets;
-	ui* reverse_index;
+	ui* reverse_index; // Build index from 
 
 	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
@@ -81,6 +81,11 @@ public:
 
 	L_ID getVertexLabel(const V_ID id) {
         	return labels[id];
+    	}
+
+	ui *getVertexNeighbors(const V_ID id, ui& count){
+        	count = offsets[id + 1] - offsets[id];
+        	return neighbors + offsets[id];
     	}
 };
 
