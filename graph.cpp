@@ -6,6 +6,21 @@ using namespace std;
 void Graph::printGraph(){
     cout << "|V|: " << v_count << ", |E|: " << e_count << ", |L|: " << l_count << endl;
     cout << "Max Degree: " << max_degree << ", Max Label Frequency: " << max_label_frequency << endl;
+    printf("Neighbourhood: ");
+    //for (int i = 0; i < v_count; i ++) {
+    //    printf("%d, ", offsets[i]);
+    //
+    //}
+    printf("\n");
+    for (int i = 0; i < v_count; i ++) {
+        printf("V_ID: %d, offsets: %d:", i, offsets[i]);
+        for (int j = offsets[i]; j < offsets[i+1]; j++) {
+            printf("%d, ", neighbors[j]);
+        }
+        printf("\n");
+    }     
+    
+    printf("\n");
 }
 void Graph::BuildNLCF(){
 	nlf = new unordered_map<L_ID, ui>[v_count];

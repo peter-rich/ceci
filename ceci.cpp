@@ -34,10 +34,12 @@ int main(int argc, char** argv){
     	cout << "-----" << endl;
 
 	ui** candidates = NULL;
-    	ui* candidates_count = NULL;
-    	TreeNode* ceci_tree = NULL;	
+    ui* candidates_count = NULL;
+    TreeNode* ceci_tree = NULL;	
 	ui* ceci_order = NULL;
-
+	
+	//vector<unordered_map<V_ID, vector<V_ID>>> TE_Candidates; // <v_p, {set of v_c}>
+	//vector<>
 	
 	return 0;
 }
