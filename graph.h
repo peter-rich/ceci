@@ -19,11 +19,15 @@ private:
 	V_ID * neighbors;
 	L_ID * labels;
 
+    ui* reverse_index_offsets;
+    ui* reverse_index;
+
 	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
-    	unordered_map<L_ID, ui>* nlf;
+    unordered_map<L_ID, ui>* nlf;
 	
 private:
+    void BuildReverseIndex();
 	void BuildNLCF();
 	void BuildLabelOffset();
 
@@ -36,7 +40,8 @@ public:
         	max_label_frequency = 0;
 
         	offsets = NULL;
-
+            reverse_index_offsets = NULL;
+            reverse_index = NULL;
         	neighbors = NULL;
         	labels = NULL;
 
@@ -48,6 +53,8 @@ public:
 	~Graph() {
 		delete[] offsets;
 		delete[] neighbors;
+        delete[] reverse_index_offsets;
+        delete[] reverse_index;
 		delete[] labels;
 		delete[] labels_offsets;
 		delete[] nlf;
@@ -59,6 +66,19 @@ public:
 	ui getLabelsCount() {
 		return l_count;
 	} 
+  
+    ui getGraphMaxLabelFrequency() {
+        return max_label_frequency;
+    }
+
+    ui * getVerticesByLabel(const L_ID id, ui& count) const {
+        count = reverse_index_offsets[id + 1] - reverse_index_offsets[id];
+        return reverse_index + reverse_index_offsets[id];
+    }
+
+    ui getVertexDegree(const V_ID id) const {
+        return offsets[id + 1] - offsets[id];
+    }
 
 	ui getVerticesCount() {
 		return v_count;
@@ -75,11 +95,16 @@ public:
 	L_ID getVertexLabel(const V_ID id) {
         	return labels[id];
     	}
-
+    
 	ui *getVertexNeighbors(const V_ID id, ui& count){
         	count = offsets[id + 1] - offsets[id];
         	return neighbors + offsets[id];
     	}
+    
+    unordered_map<L_ID, ui>* getVertexNLF(V_ID i) {
+        return nlf + i;
+    }
+
 };
 
 #endif

@@ -22,24 +22,46 @@ void Graph::printGraph(){
     
     printf("\n");
 }
-void Graph::BuildNLCF(){
-	nlf = new unordered_map<L_ID, ui>[v_count];
-    	for (ui i = 0; i < v_count; ++i) {
-        	ui count;
-        	V_ID * neighbors_tmp = getVertexNeighbors(i, count);
 
-		// count is the number of the offsets_[id + 1] - offsets_[id]; which is the number of neighbours.
+void Graph::BuildReverseIndex() { 
+    reverse_index = new ui[v_count];
+    reverse_index_offsets= new ui[l_count + 1];
+    reverse_index_offsets[0] = 0;
 
-        	for (ui j = 0; j < count; ++j) {
-            		V_ID u = neighbors_tmp[j];
-            		L_ID label = getVertexLabel(u);
-            		if (nlf[i].find(label) == nlf[i].end()) {
-                		nlf[i][label] = 0;
-            		}
+    ui total = 0;
+    for (ui i = 0; i < l_count; ++i) {
+        reverse_index_offsets[i + 1] = total;
+        total += labels_frequency[i];
+    }
 
-            		nlf[i][label] += 1;
-        	}
-    	}
+    for (ui i = 0; i < v_count; ++i) {
+        L_ID label = labels[i];
+        reverse_index[reverse_index_offsets[label + 1]++] = i;
+    }
+}
+
+void Graph::BuildNLCF(){ // neighbors count 
+	
+    // Map from [label_id] -> count of this label count value.
+    nlf = new unordered_map<L_ID, ui>[v_count];
+
+    for (ui i = 0; i < v_count; ++i) {
+        ui count;
+    	V_ID * neighbors_tmp = getVertexNeighbors(i, count);
+
+		// count is the number of the offsets[id + 1] - offsets[id]; which is the number of neighbours.
+
+        for (ui j = 0; j < count; ++j) {
+        		V_ID u = neighbors_tmp[j];
+            	L_ID label = getVertexLabel(u);
+                // If not found, this should be 0;
+            	if (nlf[i].find(label) == nlf[i].end()) {
+                	nlf[i][label] = 0;
+            	}
+
+            	nlf[i][label] += 1; // Add one after each count.
+        }
+    }
 	
 	return;
 }
@@ -120,6 +142,6 @@ void Graph::loadGraph(const string & file_path) {
 		}
 	} 
 
-	
+	BuildReverseIndex();
 	BuildNLCF();
 }

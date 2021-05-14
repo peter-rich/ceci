@@ -1,11 +1,11 @@
 exe = ceci 
 
-cc = "$(shell which g++)" 
+cc = "$(shell which clang++)" 
 
-flags = -I -std=c++17
+flags = -I -std=c++14
 
 ifeq ($(debug), 1)
-	flags+= -O0 -g #-DDEBUG 
+	flags+= -O -g #-DDEBUG 
 else
 	flags += -O
 endif
