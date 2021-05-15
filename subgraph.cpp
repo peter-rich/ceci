@@ -222,17 +222,27 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
                                 break;
                             }
                         }
-                        /*
+                        
                         if (is_valid) {
                             tmp.first->second.push_back(v);
                             if (flag[v] == 0) {
                                 flag[v] = 1;
                                 candidates[u][candidates_count[u]++] = v;
                             }
-                        }*/
+                        }
                     }
                 }
 
+            }
+	    if (tmp.first->second.empty()) {
+		// set it as invalid
+                frontiers[j] = INVALID_VERTEX_ID;
+                for (ui k = 0; k < tree[u_p].children_count; ++k) {
+                    VertexID u_c = tree[u_p].children[k];
+                    if (visited_query[u_c]) {
+                        TE_Candidates[u_c].erase(v_f);
+                    }
+                }
             }
         }
 
@@ -247,7 +257,8 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 
     }
 
-
+        
+    // NTE Tree:
 }
 // 
 // 
