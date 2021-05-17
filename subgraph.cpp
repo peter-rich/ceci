@@ -96,6 +96,7 @@ void bfs(Graph *graph, V_ID root_v, TreeNode *&tree, V_ID *&order) {
 
 
 bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&candidates_count, ui *&order, TreeNode *&tree,   vector<unordered_map<V_ID, vector<V_ID > > > &TE_Candidates, vector<vector<unordered_map<V_ID, vector<V_ID> > > > &NTE_Candidates) {
+    cout << "Initialize function: " << endl;
     // Initial the CECI Index.
     V_ID start_vertex = InitialStartVertex(data_graph, query_graph);  
     bfs(query_graph, start_vertex, tree, order); // Build the tree structure and order from query graph
@@ -111,7 +112,8 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
     }
 
     // every query tree, build their neighbour and parents information. 
-    
+    cout << "Begin Building Neighbourhood Informations" << endl;
+
     for (ui i = 0; i < query_count; ++i) {
         V_ID u = order[i];
         tree[u].under_level_count = 0;
@@ -134,7 +136,8 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
     // Initialize the Buffer for the Candidate and Candidate Count:
 
     ui candidates_max_count = data_graph->getGraphMaxLabelFrequency();
-
+    
+    cout << "Initialize Max Count: " << candidates_max_count << endl;
     candidates_count = new ui[query_count];
     memset(candidates_count, 0, sizeof(ui) * query_count);
 
@@ -149,11 +152,14 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
     
     V_ID root = order[0];
 
+    cout << "Root is: " << root << endl;
     computeNLF(data_graph, query_graph, root, candidates_count[root], candidates[root]);
 
     // No Candidates with the root
-    if (candidates_count[root] == 0)
+    if (candidates_count[root] == 0) {
+     	cout << "Build Candidate Fail" << endl;
         return false;
+    }
 
     // Have cancidates in the root:
 
@@ -168,6 +174,7 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
     visited_query[root]=true;
     TE_Candidates.resize(query_count);
 
+    cout << "Begin BFS Function:" << endl;
     // BFS order for this tree's visit.
     //
     for (ui i = 1; i < query_count; ++i) {
@@ -238,12 +245,13 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 		// set it as invalid
                 frontiers[j] = INVALID_VERTEX_ID;
                 for (ui k = 0; k < tree[u_p].children_count; ++k) {
-                    VertexID u_c = tree[u_p].children[k];
+                    V_ID u_c = tree[u_p].children[k];
                     if (visited_query[u_c]) {
                         TE_Candidates[u_c].erase(v_f);
                     }
                 }
             }
+
         }
 
         if (candidates_count[u] == 0)
@@ -257,7 +265,66 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 
     }
 
-        
+    cout << endl << "Checking function: " << endl;
+    for (ui i = 1; i < query_count; i++ ) {
+	cout << "Current Node: " << order[i] << " ; ";
+    	for (auto iter : TE_Candidates[order[i]]) {
+		cout << "Vector Size: " << iter.second.size() << " ";
+    		cout  << "Parent node: "  << iter.first << " [";
+		for (ui j = 0; j < iter.second.size(); j++) {
+			cout << iter.second[j] << ","; 
+		}
+		cout << " ] " << endl;	
+    	}
+    }
+
+
+    // NTE Tree;
+    //
+	
+    NTE_Candidates.resize(query_count);
+    for (auto& item : NTE_Candidates) {
+        item.resize(query_count);
+    }
+
+    for (ui i = 1; i < query_count; ++i) {
+    	V_ID u = order[i];
+	TreeNode & u_node = tree[u];
+
+	ui u_l = query_graph->getVertexLabel(u);
+        ui u_d = query_graph->getVertexDegree(u);
+	unordered_map<L_ID, ui> *u_nlf = query_graph->getVertexNLF(u);
+	
+	for (ui l = 0; l < u_node.bn_count; ++l) {
+		V_ID u_p = u_node.bn[l];
+		V_ID *frontiers = candidates[u_p];
+		ui frontiers_count = candidates_count[u_p];
+
+		for (ui j = 0; j < frontiers_count; ++j) {
+			V_ID v_f = frontiers[j];
+
+			if (v_f == INVALID_VERTEX_ID)
+				continue;
+
+			ui data_nbrs_count;
+			V_ID *data_nbrs = data_graph->getVertexNeighbors(v_f, data_nbrs_count);
+			
+			auto tmp = NTE_Candidates[u][u_p].emplace(v_f, vector<V_ID>());
+			for (ui k = 0; k < data_nbrs_count; ++k) {
+				V_ID v = data_nbrs[k];
+				
+				if ( data_graph->getVertexLabel(v) == u_l && data_graph->getVertexDegree(v) >= u_d ) {
+					// NLF check.	
+				}
+			}
+		}
+	
+	}
+    }
+    cout << "End of this function" << endl;
+   	
+
+    return true;
     // NTE Tree:
 }
 // 

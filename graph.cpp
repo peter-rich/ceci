@@ -1,6 +1,7 @@
 #include "graph.h"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 void Graph::printGraph(){
@@ -16,6 +17,7 @@ void Graph::printGraph(){
         printf("V_ID: %d, offsets: %d:", i, offsets[i]);
         for (int j = offsets[i]; j < offsets[i+1]; j++) {
             printf("%d, ", neighbors[j]);
+	    cout << " (" << getVertexLabel(neighbors[j]) << ") ";
         }
         printf("\n");
     }     
@@ -105,6 +107,7 @@ void Graph::loadGraph(const string & file_path) {
 				}
 				
 			}
+			labels_frequency[label] += 1;
 		}
 		else if (type == 'e') { // Read edge.
 			V_ID src;
@@ -136,7 +139,10 @@ void Graph::loadGraph(const string & file_path) {
 	} 
 	
 	// Recheck the max_label_id;
+	cout << "Test All: " << endl;
+
 	for (auto item : labels_frequency) {
+		cout << item.second << " ";
 		if (item.second > max_label_frequency) {
 			max_label_frequency = item.second;
 		}

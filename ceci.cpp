@@ -29,9 +29,9 @@ int main(int argc, char** argv){
 	
 	cout << "--------------------------------------------------------------------" << endl;
 
-    /**
-     * Start queries.
-     */	
+    	/**
+     	* Start queries.
+     	*/	
 	
 	cout << "Start queries..." << endl;
 	cout << "-----" << endl;
@@ -45,9 +45,12 @@ int main(int argc, char** argv){
 	vector<unordered_map<V_ID, vector<V_ID > > > TE_Candidates;
 	vector<vector<unordered_map<V_ID, vector<V_ID> > > > NTE_Candidates;
 	
-	CECIFunction(data_graph, query_graph, candidates, candidates_count, ceci_order, ceci_tree, TE_Candidates, NTE_Candidates);	
-    //vector<unordered_map<V_ID, vector<V_ID>>> TE_Candidates; // <v_p, {set of v_c}> 
-    //vector<>
+	cout << "CECI Function: " << endl;
+
+	bool result = CECIFunction(data_graph, query_graph, candidates, candidates_count, ceci_order, ceci_tree, TE_Candidates, NTE_Candidates);	
+	cout << "Function End: " << endl;
+    	//vector<unordered_map<V_ID, vector<V_ID>>> TE_Candidates; // <v_p, {set of v_c}> 
+    	//vector<>
 	
 	return 0;
 }

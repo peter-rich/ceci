@@ -19,15 +19,15 @@ private:
 	V_ID * neighbors;
 	L_ID * labels;
 
-    ui* reverse_index_offsets;
-    ui* reverse_index;
+    	ui* reverse_index_offsets;
+    	ui* reverse_index;
 
 	unordered_map<L_ID, ui> labels_frequency;
 	ui* labels_offsets;
-    unordered_map<L_ID, ui>* nlf;
+    	unordered_map<L_ID, ui>* nlf;
 	
 private:
-    void BuildReverseIndex();
+    	void BuildReverseIndex();
 	void BuildNLCF();
 	void BuildLabelOffset();
 
@@ -40,8 +40,8 @@ public:
         	max_label_frequency = 0;
 
         	offsets = NULL;
-            reverse_index_offsets = NULL;
-            reverse_index = NULL;
+            	reverse_index_offsets = NULL;
+            	reverse_index = NULL;
         	neighbors = NULL;
         	labels = NULL;
 
@@ -53,32 +53,35 @@ public:
 	~Graph() {
 		delete[] offsets;
 		delete[] neighbors;
-        delete[] reverse_index_offsets;
-        delete[] reverse_index;
+        	delete[] reverse_index_offsets;
+        	delete[] reverse_index;
 		delete[] labels;
 		delete[] labels_offsets;
 		delete[] nlf;
 	}
 public:
 	void loadGraph(const string & file_path);
+	
 	//void loadCompressedGraph(const );
+	
 	void printGraph();
+	
 	ui getLabelsCount() {
 		return l_count;
 	} 
   
-    ui getGraphMaxLabelFrequency() {
-        return max_label_frequency;
-    }
+    	ui getGraphMaxLabelFrequency() {
+        	return max_label_frequency;
+    	}
 
-    ui * getVerticesByLabel(const L_ID id, ui& count) const {
-        count = reverse_index_offsets[id + 1] - reverse_index_offsets[id];
-        return reverse_index + reverse_index_offsets[id];
-    }
+    	ui * getVerticesByLabel(const L_ID id, ui& count) const {
+        	count = reverse_index_offsets[id + 1] - reverse_index_offsets[id];
+        	return reverse_index + reverse_index_offsets[id];
+    	}
 
-    ui getVertexDegree(const V_ID id) const {
-        return offsets[id + 1] - offsets[id];
-    }
+    	ui getVertexDegree(const V_ID id) const {
+        	return offsets[id + 1] - offsets[id];
+    	}
 
 	ui getVerticesCount() {
 		return v_count;
@@ -101,9 +104,9 @@ public:
         	return neighbors + offsets[id];
     	}
     
-    unordered_map<L_ID, ui>* getVertexNLF(V_ID i) {
-        return nlf + i;
-    }
+	unordered_map<L_ID, ui>* getVertexNLF(V_ID i) {
+        	return nlf + i;
+    	}	
 
 };
 
