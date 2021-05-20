@@ -25,6 +25,7 @@ public:
     V_ID* bn;
     V_ID* fn;
     size_t estimated_embeddings_num;
+
 public:
     TreeNode() {
         id = 0;

@@ -165,9 +165,9 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 
     // TE_Candidates construction and filtering.
     // If the node in the data node is been visited mark as 1, else 0, can be used as cardinality in the future.;
-    vector<ui> flag(data_count);
+    vector<ui> data_visited(data_count);
 
-    fill(flag.begin(), flag.end(), 0);
+    fill(data_visited.begin(), data_visited.end(), 0);
     vector<bool> visited_query(query_count);
     fill(visited_query.begin(), visited_query.end(), false);
 
@@ -232,8 +232,8 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
                         
                         if (is_valid) {
                             tmp.first->second.push_back(v);
-                            if (flag[v] == 0) {
-                                flag[v] = 1;
+                            if (data_visited[v] == 0) {
+                                data_visited[v] = 1;
                                 candidates[u][candidates_count[u]++] = v;
                             }
                         }
@@ -260,7 +260,7 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
         // flag reset.
         for (ui j = 0; j < candidates_count[u]; ++j) {
             V_ID v = candidates[u][j];
-            flag[v] = 0; // reset the flag for the data graph.
+	    data_visited[v] = 0; // reset the data_visited for the data graph.
         }
 
     }
@@ -299,7 +299,8 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 		V_ID u_p = u_node.bn[l];
 		V_ID *frontiers = candidates[u_p];
 		ui frontiers_count = candidates_count[u_p];
-
+		// One more for for frontiers.
+		//
 		for (ui j = 0; j < frontiers_count; ++j) {
 			V_ID v_f = frontiers[j];
 
@@ -315,13 +316,167 @@ bool CECIFunction(Graph *data_graph, Graph *query_graph, ui **&candidates, ui *&
 				
 				if ( data_graph->getVertexLabel(v) == u_l && data_graph->getVertexDegree(v) >= u_d ) {
 					// NLF check.	
+					
+					unordered_map<L_ID, ui> *v_nlf = data_graph->getVertexNLF(v);
+					if (v_nlf->size() >= u_nlf->size()) {
+						bool is_valid = true;
+
+						for (auto item : *u_nlf) {
+							auto iter = v_nlf->find(item.first);
+							if (iter == v_nlf->end() || iter->second < item.second) {
+								is_valid = false;
+								break;
+							}
+
+						}
+
+						if (is_valid) {
+							tmp.first->second.push_back(v);
+						}
+					}
 				}
+			}
+
+			if (tmp.first->second.empty()) {
+				frontiers[j] = INVALID_VERTEX_ID;
+				for (ui k = 0; k < tree[u_p].children_count; ++k) {
+					V_ID u_c = tree[u_p].children[k];
+					TE_Candidates[u_c].erase(v_f);
+				}	
 			}
 		}
 	
 	}
     }
-    cout << "End of this function" << endl;
+    cout << endl << "Checking function for NTE: " << endl;
+    for (ui i = 1; i < query_count; i++ ) {
+        cout << "Current Node: " << order[i] << " ; ";
+        for (auto item : NTE_Candidates[order[i]]) {
+		for ( auto iter : item) {
+                	cout << "Vector Size: " << iter.second.size() << " ";
+                	cout  << "Parent node: "  << iter.first << " [";
+                	for (ui j = 0; j < iter.second.size(); j++) {
+                	        cout << iter.second[j] << ",";
+                	}
+                	cout << " ] " << endl;
+        	}
+	}
+    }
+
+    cout << "Reverse BFS Function:" << endl;
+    // Reverse BFS function:
+
+    vector<vector<ui>> cardinality(query_count);
+    
+    for (ui i = 0; i < query_count; ++i) {
+
+        cardinality[i].resize(candidates_count[i], 1);
+    
+    }
+
+    vector<ui> local_cardinality(data_count);
+    fill(local_cardinality.begin(), local_cardinality.end(), 0);
+    vector<ui> updated_visited(data_count); // Visited order, 
+
+    for (int i = query_count - 1; i >=0; -- i) {
+    	// Load Information of Node ID and Trees.
+	V_ID u = order[i];
+	TreeNode& u_node = tree[u];
+
+	ui updated_visited_count = 0;
+	ui visited_num = 0;
+
+	// Compute the intersection of TE_Candidates and NTE_Candidates.
+        for (ui j = 0; j < candidates_count[u]; ++j) {
+	    // Current node	
+	    V_ID v = candidates[u][j];
+
+            if (v == INVALID_VERTEX_ID)
+                continue;
+
+            if (data_visited[v] == visited_num) { // not visited yet, + 1, add those candidates into the list of updated_visited.
+                data_visited[v] += 1;
+                updated_visited[updated_visited_count++] = v;
+            }
+        }
+	
+	cout << data_visited[0] << " " << data_visited[1] << " " << data_visited[2] << " " << endl;
+
+	// Loop for NTE Candidates
+	for (ui j = 0; j < u_node.bn_count; ++j) {
+	    V_ID u_bn = u_node.bn[j];
+	    visited_num += 1;
+	    for (auto iter = NTE_Candidates[u][u_bn].begin(); iter != NTE_Candidates[u][u_bn].end(); ++iter) {
+
+                for (auto v : iter->second) {
+                    if (data_visited[v] == visited_num) {
+                        data_visited[v] += 1;
+                    }
+                }
+            }
+	}
+	
+	visited_num += 1;
+	
+	// Get the Cardinality of the Candidates of each u node in Query:
+	for (ui j = 0; j < candidates_count[u]; ++j) {
+            V_ID v = candidates[u][j];
+            if (v != INVALID_VERTEX_ID && data_visited[v] == visited_num) {
+                local_cardinality[v] = cardinality[u][j];
+            }
+            else {
+                cardinality[u][j] = 0;
+            }
+        }
+
+	V_ID u_p = u_node.parent;
+	V_ID * frontiers = candidates[u_p];
+	ui frontiers_count = candidates_count[u_p];
+	
+
+	// Reverse index, u is the current node, 
+	// Loop over TE_Candidates.
+	for (ui j = 0; j < frontiers_count; ++j) {
+            V_ID v_f = frontiers[j];
+
+	    if (v_f == INVALID_VERTEX_ID) {
+	        cardinality[u_p][j] = 0;
+		continue;
+	    }
+
+	    ui temp_score = 0;
+	    for (auto iter = TE_Candidates[u][v_f].begin(); iter != TE_Candidates[u][v_f].end();) {
+	    	V_ID v = *iter;
+		temp_score += local_cardinality[v];
+		if (local_cardinality[v] == 0) {
+		    iter = TE_Candidates[u][v_f].erase(iter);
+		    for (ui k = 0; k < u_node.children_count; ++k) {
+			V_ID u_c = u_node.children[k];
+			TE_Candidates[u_c].erase(v);
+		    }
+
+		    for (ui k = 0; k < u_node.fn_count; ++k) {
+		    	V_ID u_c = u_node.fn[k];
+			NTE_Candidates[u_c][u].erase(v);
+		    }
+		}	
+		else {
+		    ++iter;
+		}
+	    }
+	    cardinality[u_p][j] *= temp_score;
+
+	}
+
+	// Initialize updated_visited;
+	for (ui j = 0; j < updated_visited_count; ++j) {
+		data_visited[updated_visited[j]] = 0;
+		local_cardinality[updated_visited[j]] = 0;
+	}
+    }
+
+
+    cout << endl << "End of this function" << endl;
    	
 
     return true;
